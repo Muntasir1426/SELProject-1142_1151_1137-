@@ -1,0 +1,83 @@
+@model ggChick.ViewModels.Account.LoginViewModel
+@{
+    ViewData["Title"] = "Sign In";
+}
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-5">
+            <div class="card border-0 shadow-lg rounded-4 p-4 p-sm-5" style="background-color: var(--bg-surface);">
+                <div class="text-center mb-4">
+                    <span class="badge bg-primary-subtle text-primary p-2 rounded-circle mb-2">
+                        <i class="bi bi-box-arrow-in-right fs-3"></i>
+                    </span>
+                    <h3 class="fw-bold">Welcome Back</h3>
+                    <p class="text-secondary small">Sign in to your GGCLIKS account</p>
+                </div>
+
+                <!-- Demo Credentials Helper Callout -->
+                <div class="alert alert-info py-2 px-3 small rounded-3 mb-4">
+                    <div class="fw-bold mb-1"><i class="bi bi-info-circle-fill me-1"></i> Demo Credentials:</div>
+                    <div class="d-flex justify-content-between mb-1">
+                        <span><strong>Admin:</strong> <code>admin@ggcliks.com</code></span>
+                        <span>Pass: <code>Admin@123</code></span>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <span><strong>User:</strong> <code>user@ggcliks.com</code></span>
+                        <span>Pass: <code>User@123</code></span>
+                    </div>
+                </div>
+
+                <form asp-action="Login" method="post" novalidate>
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" asp-for="ReturnUrl" />
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger py-2 small" role="alert"></div>
+
+                    <!-- Username or Email -->
+                    <div class="mb-3">
+                        <label asp-for="UserNameOrEmail" class="form-label small fw-semibold"></label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light border-end-0"><i class="bi bi-person"></i></span>
+                            <input asp-for="UserNameOrEmail" class="form-control border-start-0" placeholder="Username or Email" autocomplete="username" />
+                        </div>
+                        <span asp-validation-for="UserNameOrEmail" class="text-danger small"></span>
+                    </div>
+
+                    <!-- Password -->
+                    <div class="mb-3">
+                        <div class="d-flex justify-content-between">
+                            <label asp-for="Password" class="form-label small fw-semibold"></label>
+                            <a asp-action="ForgotPassword" class="text-secondary small text-decoration-none">Forgot password?</a>
+                        </div>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light border-end-0"><i class="bi bi-key"></i></span>
+                            <input asp-for="Password" class="form-control border-start-0" placeholder="Your password" autocomplete="current-password" />
+                        </div>
+                        <span asp-validation-for="Password" class="text-danger small"></span>
+                    </div>
+
+                    <!-- Remember Me -->
+                    <div class="mb-4 form-check">
+                        <input class="form-check-input" type="checkbox" asp-for="RememberMe" id="rememberMeCheck" />
+                        <label class="form-check-label small" for="rememberMeCheck">
+                            Remember this device
+                        </label>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <button type="submit" class="btn btn-primary-custom w-100 py-2 fs-6 rounded-3">
+                        <i class="bi bi-box-arrow-in-right me-1"></i> Sign In
+                    </button>
+                </form>
+
+                <div class="text-center mt-4 pt-2 border-top">
+                    <p class="text-secondary small mb-0">Don't have an account? <a asp-action="Register" class="text-primary fw-semibold text-decoration-none">Register here</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

@@ -1,0 +1,4 @@
+﻿Member 1 â€” Core Setup, Authentication, Users & Database
+Branch: member-1-core-auth-data
+This folder contains only this member's assigned project files.
+Merge all three member branches to reconstruct the complete project.

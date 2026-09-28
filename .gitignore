@@ -1,0 +1,22 @@
+## Visual Studio / Build Artifacts
+.vs/
+bin/
+obj/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+## Secrets & Local Configs
+appsettings.Production.json
+secrets.json
+*.key
+*.pfx
+
+## Uploads (Keep folder, ignore transient user uploads)
+ggChick/wwwroot/uploads/products/*
+!ggChick/wwwroot/uploads/products/.gitkeep
+
+## OS Specific
+.DS_Store
+Thumbs.db

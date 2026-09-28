@@ -1,0 +1,99 @@
+@model ggChick.ViewModels.Account.RegisterViewModel
+@{
+    ViewData["Title"] = "Create Account";
+}
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-7 col-lg-5">
+            <div class="card border-0 shadow-lg rounded-4 p-4 p-sm-5" style="background-color: var(--bg-surface);">
+                <div class="text-center mb-4">
+                    <span class="badge bg-primary-subtle text-primary p-2 rounded-circle mb-2">
+                        <i class="bi bi-person-plus-fill fs-3"></i>
+                    </span>
+                    <h3 class="fw-bold">Join GGCLIKS</h3>
+                    <p class="text-secondary small">Create an account to shop, track orders, and write reviews.</p>
+                </div>
+
+                <form asp-action="Register" method="post" novalidate id="registerForm">
+                    @Html.AntiForgeryToken()
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger py-2 small" role="alert"></div>
+
+                    <!-- Full Name -->
+                    <div class="mb-3">
+                        <label asp-for="FullName" class="form-label small fw-semibold"></label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light border-end-0"><i class="bi bi-person"></i></span>
+                            <input asp-for="FullName" class="form-control border-start-0" placeholder="e.g. John Doe" />
+                        </div>
+                        <span asp-validation-for="FullName" class="text-danger small"></span>
+                    </div>
+
+                    <!-- Username with Real-time Check -->
+                    <div class="mb-3">
+                        <label asp-for="UserName" class="form-label small fw-semibold"></label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light border-end-0"><i class="bi bi-at"></i></span>
+                            <input asp-for="UserName" class="form-control border-start-0" id="usernameInput" placeholder="Choose a username" autocomplete="username" />
+                        </div>
+                        <div id="usernameFeedback" class="small mt-1"></div>
+                        <span asp-validation-for="UserName" class="text-danger small"></span>
+                    </div>
+
+                    <!-- Email with Real-time Check -->
+                    <div class="mb-3">
+                        <label asp-for="Email" class="form-label small fw-semibold"></label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light border-end-0"><i class="bi bi-envelope"></i></span>
+                            <input asp-for="Email" class="form-control border-start-0" id="emailInput" placeholder="name@example.com" autocomplete="email" />
+                        </div>
+                        <div id="emailFeedback" class="small mt-1"></div>
+                        <span asp-validation-for="Email" class="text-danger small"></span>
+                    </div>
+
+                    <!-- Password with Live Strength Indicator -->
+                    <div class="mb-3">
+                        <label asp-for="Password" class="form-label small fw-semibold"></label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light border-end-0"><i class="bi bi-key"></i></span>
+                            <input asp-for="Password" class="form-control border-start-0" id="passwordInput" placeholder="At least 6 characters" autocomplete="new-password" />
+                        </div>
+                        <!-- Live Password Strength Meter -->
+                        <div id="strengthContainer" class="d-none mt-2">
+                            <div class="progress" style="height: 6px;">
+                                <div class="progress-bar" id="strengthBar" role="progressbar" style="width: 0%;"></div>
+                            </div>
+                            <small id="strengthText" class="mt-1 d-block"></small>
+                        </div>
+                        <span asp-validation-for="Password" class="text-danger small"></span>
+                    </div>
+
+                    <!-- Confirm Password -->
+                    <div class="mb-4">
+                        <label asp-for="ConfirmPassword" class="form-label small fw-semibold"></label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light border-end-0"><i class="bi bi-shield-check"></i></span>
+                            <input asp-for="ConfirmPassword" class="form-control border-start-0" placeholder="Re-enter password" autocomplete="new-password" />
+                        </div>
+                        <span asp-validation-for="ConfirmPassword" class="text-danger small"></span>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <button type="submit" class="btn btn-primary-custom w-100 py-2 fs-6 rounded-3">
+                        <i class="bi bi-arrow-right-circle me-1"></i> Register Account
+                    </button>
+                </form>
+
+                <div class="text-center mt-4 pt-2 border-top">
+                    <p class="text-secondary small mb-0">Already registered? <a asp-action="Login" class="text-primary fw-semibold text-decoration-none">Sign in here</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script src="~/js/password-strength.js" asp-append-version="true"></script>
+    <script src="~/js/availability-check.js" asp-append-version="true"></script>
+}
