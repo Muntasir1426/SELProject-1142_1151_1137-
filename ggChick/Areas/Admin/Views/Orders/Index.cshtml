@@ -1,0 +1,82 @@
+@model IEnumerable<ggChick.Models.Order>
+@{
+    ViewData["Title"] = "Manage Orders";
+    var currentStatus = ViewBag.CurrentStatus as ggChick.Models.Enums.OrderStatus?;
+}
+
+<div class="d-flex flex-wrap justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="fw-bold mb-1">Customer Orders</h2>
+        <p class="text-secondary small mb-0">Track and fulfill customer purchases across all statuses</p>
+    </div>
+
+    <!-- Filter Buttons -->
+    <div class="btn-group btn-group-sm" role="group">
+        <a asp-action="Index" class="btn @(!currentStatus.HasValue ? "btn-primary" : "btn-outline-secondary")">All</a>
+        <a asp-action="Index" asp-route-status="@ggChick.Models.Enums.OrderStatus.Pending" class="btn @(currentStatus == ggChick.Models.Enums.OrderStatus.Pending ? "btn-warning" : "btn-outline-secondary")">Pending</a>
+        <a asp-action="Index" asp-route-status="@ggChick.Models.Enums.OrderStatus.Processing" class="btn @(currentStatus == ggChick.Models.Enums.OrderStatus.Processing ? "btn-info text-white" : "btn-outline-secondary")">Processing</a>
+        <a asp-action="Index" asp-route-status="@ggChick.Models.Enums.OrderStatus.Shipped" class="btn @(currentStatus == ggChick.Models.Enums.OrderStatus.Shipped ? "btn-primary" : "btn-outline-secondary")">Shipped</a>
+        <a asp-action="Index" asp-route-status="@ggChick.Models.Enums.OrderStatus.Delivered" class="btn @(currentStatus == ggChick.Models.Enums.OrderStatus.Delivered ? "btn-success" : "btn-outline-secondary")">Delivered</a>
+        <a asp-action="Index" asp-route-status="@ggChick.Models.Enums.OrderStatus.Cancelled" class="btn @(currentStatus == ggChick.Models.Enums.OrderStatus.Cancelled ? "btn-danger" : "btn-outline-secondary")">Cancelled</a>
+    </div>
+</div>
+
+<div class="card border-0 shadow-sm rounded-4 overflow-hidden" style="background-color: var(--bg-surface);">
+    <div class="table-responsive">
+        <table class="table align-middle mb-0">
+            <thead class="table-light small">
+                <tr>
+                    <th class="ps-4">Order ID</th>
+                    <th>Customer Name</th>
+                    <th>Date Placed</th>
+                    <th>Items</th>
+                    <th>Total</th>
+                    <th>Status</th>
+                    <th class="text-end pe-4">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var order in Model)
+                {
+                    <tr>
+                        <td class="ps-4 fw-bold">#@order.Id</td>
+                        <td>
+                            <div>
+                                <span class="fw-semibold small">@(order.User?.FullName ?? "Customer")</span>
+                                <small class="text-muted d-block">@(order.User?.Email ?? "No email")</small>
+                            </div>
+                        </td>
+                        <td class="small">@order.OrderDate.ToString("MMM dd, yyyy h:mm tt")</td>
+                        <td class="small">@order.OrderItems.Sum(x => x.Quantity) items</td>
+                        <td class="fw-bold text-primary small">৳@order.TotalAmount.ToString("F2")</td>
+                        <td>
+                            @switch (order.Status)
+                            {
+                                case ggChick.Models.Enums.OrderStatus.Pending:
+                                    <span class="status-badge status-pending">Pending</span>
+                                    break;
+                                case ggChick.Models.Enums.OrderStatus.Processing:
+                                    <span class="status-badge status-processing">Processing</span>
+                                    break;
+                                case ggChick.Models.Enums.OrderStatus.Shipped:
+                                    <span class="status-badge status-shipped">Shipped</span>
+                                    break;
+                                case ggChick.Models.Enums.OrderStatus.Delivered:
+                                    <span class="status-badge status-delivered">Delivered</span>
+                                    break;
+                                case ggChick.Models.Enums.OrderStatus.Cancelled:
+                                    <span class="status-badge status-cancelled">Cancelled</span>
+                                    break;
+                            }
+                        </td>
+                        <td class="text-end pe-4">
+                            <a asp-action="Details" asp-route-id="@order.Id" class="btn btn-sm btn-outline-custom">
+                                View &amp; Update
+                            </a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

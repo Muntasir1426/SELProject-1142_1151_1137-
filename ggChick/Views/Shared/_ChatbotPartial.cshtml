@@ -1,0 +1,48 @@
+<!-- Google Gemini AI Floating Shopping Assistant -->
+<div class="chatbot-widget" id="chatbotWidget">
+    <!-- Floating Circular Toggle Button -->
+    <button class="chatbot-toggle-btn" id="chatbotToggleBtn" aria-label="Open AI Shopping Assistant" title="Chat with GGCLIKS AI Assistant">
+        <i class="bi bi-chat-dots-fill"></i>
+        <span class="badge-dot" title="AI Online"></span>
+    </button>
+
+    <!-- Chatbot Window -->
+    <div class="chatbot-window" id="chatbotWindow">
+        <!-- Header -->
+        <div class="chatbot-header">
+            <div class="chatbot-header-info">
+                <div class="chatbot-avatar">
+                    <i class="bi bi-robot"></i>
+                </div>
+                <div>
+                    <h6 class="mb-0 fw-bold">GGCLIKS AI Assistant</h6>
+                    <small class="text-white-50"><i class="bi bi-circle-fill text-success" style="font-size: 8px;"></i> Powered by Google Gemini</small>
+                </div>
+            </div>
+            <button class="chatbot-close-btn" id="chatbotCloseBtn" aria-label="Close Assistant">
+                <i class="bi bi-x-lg"></i>
+            </button>
+        </div>
+
+        <!-- Message History -->
+        <div class="chatbot-messages" id="chatbotMessages">
+            <div class="chat-bubble bot">
+                Hello! 👋 I'm your <strong>GGCLIKS AI Assistant</strong>. Ask me anything about our products, recommendations, shipping, or returns!
+                <div class="chatbot-suggestions">
+                    <button type="button" class="suggestion-chip" data-query="Recommend trendy oversized hoodies">🔥 Best Hoodies</button>
+                    <button type="button" class="suggestion-chip" data-query="Show me cozy knit cardigans">🧶 Cardigans</button>
+                    <button type="button" class="suggestion-chip" data-query="What pants and tshirts do you have?">👖 Pants & Tees</button>
+                    <button type="button" class="suggestion-chip" data-query="What is your shipping policy?">📦 Shipping Policy</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Input Footer -->
+        <form class="chatbot-input-area" id="chatbotForm">
+            <input type="text" class="chatbot-input" id="chatbotInput" placeholder="Ask about products, orders..." autocomplete="off" />
+            <button type="submit" class="chatbot-send-btn" id="chatbotSendBtn" aria-label="Send Message">
+                <i class="bi bi-send-fill"></i>
+            </button>
+        </form>
+    </div>
+</div>

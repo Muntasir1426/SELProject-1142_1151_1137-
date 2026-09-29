@@ -1,0 +1,125 @@
+@model ggChick.ViewModels.Orders.CheckoutViewModel
+@{
+    ViewData["Title"] = "Checkout";
+}
+
+<div class="container py-4">
+    <div class="mb-4 pb-2 border-bottom">
+        <h2 class="fw-bold mb-1">Checkout</h2>
+        <p class="text-secondary small mb-0">Provide your shipping address and confirm your purchase.</p>
+    </div>
+
+    <form asp-action="Checkout" method="post" novalidate>
+        @Html.AntiForgeryToken()
+        <div asp-validation-summary="ModelOnly" class="alert alert-danger py-2 small" role="alert"></div>
+
+        <div class="row g-4">
+            <!-- Left: Shipping Information -->
+            <div class="col-lg-7">
+                <div class="card border-0 shadow-sm rounded-4 p-4 mb-4" style="background-color: var(--bg-surface);">
+                    <h5 class="fw-bold mb-3"><i class="bi bi-geo-alt me-2 text-primary"></i> Delivery Information</h5>
+
+                    <!-- Full Name -->
+                    <div class="mb-3">
+                        <label asp-for="FullName" class="form-label small fw-semibold"></label>
+                        <input asp-for="FullName" class="form-control" placeholder="Recipient's full name" />
+                        <span asp-validation-for="FullName" class="text-danger small"></span>
+                    </div>
+
+                    <!-- Email & Phone -->
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            <label asp-for="Email" class="form-label small fw-semibold"></label>
+                            <input asp-for="Email" class="form-control" placeholder="Confirmation email" />
+                            <span asp-validation-for="Email" class="text-danger small"></span>
+                        </div>
+                        <div class="col-md-6">
+                            <label asp-for="PhoneNumber" class="form-label small fw-semibold"></label>
+                            <input asp-for="PhoneNumber" class="form-control" placeholder="Mobile phone" />
+                            <span asp-validation-for="PhoneNumber" class="text-danger small"></span>
+                        </div>
+                    </div>
+
+                    <!-- Shipping Address -->
+                    <div class="mb-3">
+                        <label asp-for="ShippingAddress" class="form-label small fw-semibold"></label>
+                        <textarea asp-for="ShippingAddress" class="form-control" rows="3" placeholder="Street address, city, state/province, postal code"></textarea>
+                        <span asp-validation-for="ShippingAddress" class="text-danger small"></span>
+                    </div>
+
+                    <!-- Notes -->
+                    <div class="mb-2">
+                        <label asp-for="Notes" class="form-label small fw-semibold"></label>
+                        <input asp-for="Notes" class="form-control" placeholder="Gate codes, delivery instructions (optional)" />
+                    </div>
+                </div>
+
+                <div class="card border-0 shadow-sm rounded-4 p-4" style="background-color: var(--bg-surface);">
+                    <h5 class="fw-bold mb-3"><i class="bi bi-credit-card me-2 text-primary"></i> Payment Method</h5>
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="radio" name="paymentMethod" id="cod" checked>
+                        <label class="form-check-label fw-semibold" for="cod">
+                            Cash on Delivery / Card on Arrival
+                        </label>
+                        <p class="text-secondary small mb-0">Pay securely in cash or card upon delivery to your doorstep.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right: Order Items & Total -->
+            <div class="col-lg-5">
+                <div class="card border-0 shadow-sm rounded-4 p-4" style="background-color: var(--bg-surface);">
+                    <h5 class="fw-bold mb-3">Review Order (@Model.Cart.TotalItemCount items)</h5>
+
+                    <div class="d-flex flex-column gap-3 mb-3 max-vh-50 overflow-auto">
+                        @foreach (var item in Model.Cart.Items)
+                        {
+                            <div class="d-flex align-items-center justify-content-between pb-2 border-bottom">
+                                <div class="d-flex align-items-center gap-2">
+                                    <img src="@(item.ImageUrl ?? "/images/placeholder.svg")" class="rounded-2 border" style="width: 45px; height: 45px; object-fit: cover;" alt="@item.ProductName" />
+                                    <div>
+                                        <h6 class="mb-0 small fw-bold text-truncate" style="max-width: 170px;">@item.ProductName</h6>
+                                        <small class="text-muted">Qty: @item.Quantity &times; ৳@item.UnitPrice.ToString("F2")</small>
+                                    </div>
+                                </div>
+                                <span class="fw-semibold small">৳@item.Subtotal.ToString("F2")</span>
+                            </div>
+                        }
+                    </div>
+
+                    <div class="d-flex justify-content-between mb-2 small">
+                        <span class="text-secondary">Subtotal</span>
+                        <span class="fw-semibold">৳@Model.Cart.Subtotal.ToString("F2")</span>
+                    </div>
+
+                    <div class="d-flex justify-content-between mb-2 small">
+                        <span class="text-secondary">Tax (5%)</span>
+                        <span class="fw-semibold">৳@Model.Cart.EstimatedTax.ToString("F2")</span>
+                    </div>
+
+                    <div class="d-flex justify-content-between mb-3 small">
+                        <span class="text-secondary">Shipping</span>
+                        <span class="fw-semibold @(Model.Cart.ShippingFee == 0 ? "text-success" : "")">
+                            @(Model.Cart.ShippingFee == 0 ? "FREE" : "৳" + Model.Cart.ShippingFee.ToString("F2"))
+                        </span>
+                    </div>
+
+                    <hr class="my-3">
+
+                    <div class="d-flex justify-content-between mb-4">
+                        <span class="fw-bold fs-5">Grand Total</span>
+                        <span class="fw-bold fs-5 text-primary">৳@Model.Cart.GrandTotal.ToString("F2")</span>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary-custom w-100 py-3 fs-6 rounded-pill">
+                        <i class="bi bi-lock-fill me-1"></i> Confirm &amp; Place Order
+                    </button>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

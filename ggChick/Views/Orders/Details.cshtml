@@ -1,0 +1,113 @@
+@model ggChick.Models.Order
+@{
+    ViewData["Title"] = "Order Details #" + Model.Id;
+}
+
+<div class="container py-4">
+    <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 pb-2 border-bottom">
+        <div>
+            <h2 class="fw-bold mb-1">Order #@Model.Id Details</h2>
+            <p class="text-secondary small mb-0">Placed on @Model.OrderDate.ToString("MMMM dd, yyyy h:mm tt")</p>
+        </div>
+        <div>
+            <a asp-action="Index" class="btn btn-outline-custom btn-sm rounded-pill">
+                <i class="bi bi-arrow-left me-1"></i> Back to Orders
+            </a>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-4" style="background-color: var(--bg-surface);">
+                <div class="card-header bg-light py-3">
+                    <h6 class="mb-0 fw-bold">Items in this Order</h6>
+                </div>
+                <div class="table-responsive">
+                    <table class="table align-middle mb-0">
+                        <thead class="table-light small">
+                            <tr>
+                                <th class="ps-4">Product</th>
+                                <th>Unit Price</th>
+                                <th>Quantity</th>
+                                <th class="text-end pe-4">Subtotal</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.OrderItems)
+                            {
+                                <tr>
+                                    <td class="ps-4">
+                                        <div class="d-flex align-items-center gap-3">
+                                            <img src="@(item.Product?.MainImageUrl ?? "/images/placeholder.svg")" class="rounded border" style="width: 45px; height: 45px; object-fit: cover;" alt="" />
+                                            <div>
+                                                <h6 class="mb-0 small fw-bold">
+                                                    @if (item.Product != null)
+                                                    {
+                                                        <a asp-controller="Products" asp-action="Details" asp-route-id="@item.ProductId" class="text-decoration-none text-reset">
+                                                            @item.Product.Name
+                                                        </a>
+                                                    }
+                                                    else
+                                                    {
+                                                        <span>Product Item</span>
+                                                    }
+                                                </h6>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="small">৳@item.UnitPrice.ToString("F2")</td>
+                                    <td class="small">@item.Quantity</td>
+                                    <td class="text-end pe-4 fw-bold small text-primary">৳@item.Subtotal.ToString("F2")</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <!-- Order Summary Card -->
+            <div class="card border-0 shadow-sm rounded-4 p-4 mb-4" style="background-color: var(--bg-surface);">
+                <h6 class="fw-bold mb-3">Order Status</h6>
+                <div class="mb-3">
+                    @switch (Model.Status)
+                    {
+                        case ggChick.Models.Enums.OrderStatus.Pending:
+                            <div class="alert alert-warning py-2 mb-0"><strong>Status:</strong> Pending Confirmation</div>
+                            break;
+                        case ggChick.Models.Enums.OrderStatus.Processing:
+                            <div class="alert alert-info py-2 mb-0"><strong>Status:</strong> Processing &amp; Packing</div>
+                            break;
+                        case ggChick.Models.Enums.OrderStatus.Shipped:
+                            <div class="alert alert-primary py-2 mb-0"><strong>Status:</strong> Shipped &amp; In Transit</div>
+                            break;
+                        case ggChick.Models.Enums.OrderStatus.Delivered:
+                            <div class="alert alert-success py-2 mb-0"><strong>Status:</strong> Delivered to Destination</div>
+                            break;
+                        case ggChick.Models.Enums.OrderStatus.Cancelled:
+                            <div class="alert alert-danger py-2 mb-0"><strong>Status:</strong> Cancelled</div>
+                            break;
+                    }
+                </div>
+
+                <div class="border-top pt-3 small">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="text-secondary">Grand Total</span>
+                        <strong class="fs-5 text-primary">৳@Model.TotalAmount.ToString("F2")</strong>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Shipping Details Card -->
+            <div class="card border-0 shadow-sm rounded-4 p-4" style="background-color: var(--bg-surface);">
+                <h6 class="fw-bold mb-2">Delivery Information</h6>
+                <p class="small text-secondary mb-2"><strong>Address:</strong><br />@Model.ShippingAddress</p>
+                @if (!string.IsNullOrEmpty(Model.PhoneNumber))
+                {
+                    <p class="small text-secondary mb-0"><strong>Phone:</strong> @Model.PhoneNumber</p>
+                }
+            </div>
+        </div>
+    </div>
+</div>
