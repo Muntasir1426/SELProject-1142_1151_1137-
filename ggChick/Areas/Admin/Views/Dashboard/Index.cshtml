@@ -1,0 +1,195 @@
+@model ggChick.ViewModels.Admin.DashboardStatsViewModel
+@{
+    ViewData["Title"] = "Admin Dashboard";
+}
+
+<div class="d-flex flex-wrap justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="fw-bold mb-1">Store Dashboard</h2>
+        <p class="text-secondary small mb-0">Real-time store metrics, PostgreSQL transactional data, and analytics</p>
+    </div>
+    <div class="d-flex gap-2">
+        <a asp-area="Admin" asp-controller="Products" asp-action="Create" class="btn btn-primary-custom btn-sm rounded-pill">
+            <i class="bi bi-plus-lg me-1"></i> Add Product
+        </a>
+        <a asp-area="Admin" asp-controller="Categories" asp-action="Create" class="btn btn-outline-custom btn-sm rounded-pill">
+            <i class="bi bi-plus-lg me-1"></i> Add Category
+        </a>
+    </div>
+</div>
+
+<!-- 5 Stat Cards -->
+<div class="row g-4 mb-4">
+    <!-- Total Revenue -->
+    <div class="col-sm-6 col-lg">
+        <div class="stat-card">
+            <div>
+                <span class="text-secondary small fw-semibold text-uppercase">Total Revenue</span>
+                <h3 class="fw-bold mb-0 mt-1">৳@Model.TotalRevenue.ToString("N2")</h3>
+            </div>
+            <div class="stat-icon success">
+                <i class="bi bi-currency-dollar"></i>
+            </div>
+        </div>
+    </div>
+
+    <!-- Total Orders -->
+    <div class="col-sm-6 col-lg">
+        <div class="stat-card">
+            <div>
+                <span class="text-secondary small fw-semibold text-uppercase">Total Orders</span>
+                <h3 class="fw-bold mb-0 mt-1">@Model.TotalOrders</h3>
+            </div>
+            <div class="stat-icon primary">
+                <i class="bi bi-bag-check"></i>
+            </div>
+        </div>
+    </div>
+
+    <!-- Total Products -->
+    <div class="col-sm-6 col-lg">
+        <div class="stat-card">
+            <div>
+                <span class="text-secondary small fw-semibold text-uppercase">Catalog Items</span>
+                <h3 class="fw-bold mb-0 mt-1">@Model.TotalProducts</h3>
+            </div>
+            <div class="stat-icon info">
+                <i class="bi bi-box-seam"></i>
+            </div>
+        </div>
+    </div>
+
+    <!-- Total Users -->
+    <div class="col-sm-6 col-lg">
+        <div class="stat-card">
+            <div>
+                <span class="text-secondary small fw-semibold text-uppercase">Customers</span>
+                <h3 class="fw-bold mb-0 mt-1">@Model.TotalUsers</h3>
+            </div>
+            <div class="stat-icon purple">
+                <i class="bi bi-people"></i>
+            </div>
+        </div>
+    </div>
+
+    <!-- Total Reviews -->
+    <div class="col-sm-6 col-lg">
+        <div class="stat-card">
+            <div>
+                <span class="text-secondary small fw-semibold text-uppercase">Reviews</span>
+                <h3 class="fw-bold mb-0 mt-1">@Model.TotalReviews</h3>
+            </div>
+            <div class="stat-icon warning">
+                <i class="bi bi-star"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 4 Chart.js Visualizations (Real data from EF Core / PostgreSQL) -->
+<div class="row g-4 mb-4">
+    <!-- Chart 1: Sales Over Time (Line) -->
+    <div class="col-lg-8">
+        <div class="chart-card">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h6 class="fw-bold mb-0"><i class="bi bi-graph-up me-2 text-primary"></i> Monthly Sales Revenue (৳)</h6>
+                <span class="badge bg-primary-subtle text-primary">Last 6 Months</span>
+            </div>
+            <div class="chart-container">
+                <canvas id="salesChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chart 2: Orders by Status (Doughnut) -->
+    <div class="col-lg-4">
+        <div class="chart-card">
+            <h6 class="fw-bold mb-3"><i class="bi bi-pie-chart me-2 text-info"></i> Orders by Status</h6>
+            <div class="chart-container">
+                <canvas id="statusChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chart 3: Top Selling Products (Bar) -->
+    <div class="col-lg-6">
+        <div class="chart-card">
+            <h6 class="fw-bold mb-3"><i class="bi bi-bar-chart-line me-2 text-success"></i> Top-Selling Products</h6>
+            <div class="chart-container">
+                <canvas id="topProductsChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chart 4: Products by Category (Pie) -->
+    <div class="col-lg-6">
+        <div class="chart-card">
+            <h6 class="fw-bold mb-3"><i class="bi bi-pie-chart-fill me-2 text-warning"></i> Products by Category</h6>
+            <div class="chart-container">
+                <canvas id="categoryChart"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Orders Table -->
+<div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-4" style="background-color: var(--bg-surface);">
+    <div class="card-header bg-light d-flex justify-content-between align-items-center py-3">
+        <h6 class="fw-bold mb-0"><i class="bi bi-receipt me-2"></i> Recent Customer Orders</h6>
+        <a asp-area="Admin" asp-controller="Orders" asp-action="Index" class="btn btn-sm btn-outline-custom">View All Orders</a>
+    </div>
+    <div class="table-responsive">
+        <table class="table align-middle mb-0">
+            <thead class="table-light small">
+                <tr>
+                    <th class="ps-4">Order #</th>
+                    <th>Customer</th>
+                    <th>Date</th>
+                    <th>Total</th>
+                    <th>Status</th>
+                    <th class="text-end pe-4">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var order in Model.RecentOrders)
+                {
+                    <tr>
+                        <td class="ps-4 fw-bold">#@order.Id</td>
+                        <td class="small">@(order.User?.FullName ?? order.User?.Email ?? "Guest")</td>
+                        <td class="small">@order.OrderDate.ToString("MMM dd, yyyy")</td>
+                        <td class="fw-bold text-primary small">৳@order.TotalAmount.ToString("F2")</td>
+                        <td>
+                            @switch (order.Status)
+                            {
+                                case ggChick.Models.Enums.OrderStatus.Pending:
+                                    <span class="status-badge status-pending">Pending</span>
+                                    break;
+                                case ggChick.Models.Enums.OrderStatus.Processing:
+                                    <span class="status-badge status-processing">Processing</span>
+                                    break;
+                                case ggChick.Models.Enums.OrderStatus.Shipped:
+                                    <span class="status-badge status-shipped">Shipped</span>
+                                    break;
+                                case ggChick.Models.Enums.OrderStatus.Delivered:
+                                    <span class="status-badge status-delivered">Delivered</span>
+                                    break;
+                                case ggChick.Models.Enums.OrderStatus.Cancelled:
+                                    <span class="status-badge status-cancelled">Cancelled</span>
+                                    break;
+                            }
+                        </td>
+                        <td class="text-end pe-4">
+                            <a asp-area="Admin" asp-controller="Orders" asp-action="Details" asp-route-id="@order.Id" class="btn btn-sm btn-outline-custom">
+                                Manage
+                            </a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/js/admin-charts.js" asp-append-version="true"></script>
+}

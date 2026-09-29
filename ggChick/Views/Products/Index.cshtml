@@ -1,0 +1,273 @@
+@model ggChick.ViewModels.Products.ProductListViewModel
+@{
+    ViewData["Title"] = "Shop Catalog";
+}
+
+<div class="container py-4">
+    <!-- Header & Breadcrumbs -->
+    <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 pb-2 border-bottom">
+        <div>
+            <h2 class="fw-bold mb-1">Product Catalog</h2>
+            <p class="text-secondary small mb-0">Showing @Model.TotalItems products</p>
+        </div>
+        <div>
+            <!-- Sort Dropdown -->
+            <form method="get" id="sortForm" class="d-flex align-items-center gap-2">
+                <input type="hidden" name="search" value="@Model.Search" />
+                <input type="hidden" name="categoryId" value="@Model.CategoryId" />
+                <input type="hidden" name="minPrice" value="@Model.MinPrice" />
+                <input type="hidden" name="maxPrice" value="@Model.MaxPrice" />
+                <input type="hidden" name="minRating" value="@Model.MinRating" />
+                <input type="hidden" name="inStockOnly" value="@Model.InStockOnly.ToString().ToLower()" />
+
+                <label class="small text-secondary fw-semibold text-nowrap">Sort By:</label>
+                <select name="sort" class="form-select form-select-sm rounded-3" style="width: auto;" onchange="this.form.submit()">
+                    <option value="newest" selected="@(Model.Sort == "newest")">Newest Arrivals</option>
+                    <option value="priceAsc" selected="@(Model.Sort == "priceAsc")">Price: Low to High</option>
+                    <option value="priceDesc" selected="@(Model.Sort == "priceDesc")">Price: High to Low</option>
+                    <option value="rating" selected="@(Model.Sort == "rating")">Highest Customer Rating</option>
+                    <option value="nameAsc" selected="@(Model.Sort == "nameAsc")">Product Name (A-Z)</option>
+                </select>
+            </form>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <!-- Sidebar Filter Form -->
+        <div class="col-lg-3">
+            <div class="filter-card">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="fw-bold mb-0"><i class="bi bi-funnel me-1 text-primary"></i> Filters</h5>
+                    <a asp-action="Index" class="small text-danger text-decoration-none">Reset All</a>
+                </div>
+
+                <form method="get" asp-action="Index">
+                    <input type="hidden" name="sort" value="@Model.Sort" />
+
+                    <!-- Search Input -->
+                    <div class="mb-4">
+                        <label class="form-label small fw-semibold">Keywords</label>
+                        <div class="input-group input-group-sm">
+                            <input type="text" name="search" class="form-control" placeholder="Search products..." value="@Model.Search" />
+                            <button class="btn btn-outline-secondary" type="submit"><i class="bi bi-search"></i></button>
+                        </div>
+                    </div>
+
+                    <!-- Category Filter -->
+                    <div class="mb-4">
+                        <label class="form-label small fw-semibold">Category</label>
+                        <select name="categoryId" class="form-select form-select-sm" onchange="this.form.submit()">
+                            <option value="">All Categories</option>
+                            @foreach (var cat in Model.Categories)
+                            {
+                                <option value="@cat.Id" selected="@(Model.CategoryId == cat.Id)">@cat.Name</option>
+                            }
+                        </select>
+                    </div>
+
+                    <!-- Price Range -->
+                    <div class="mb-4">
+                        <label class="form-label small fw-semibold">Price Range (৳)</label>
+                        <div class="row g-2">
+                            <div class="col-6">
+                                <input type="number" step="1" name="minPrice" class="form-control form-control-sm" placeholder="Min" value="@Model.MinPrice" />
+                            </div>
+                            <div class="col-6">
+                                <input type="number" step="1" name="maxPrice" class="form-control form-control-sm" placeholder="Max" value="@Model.MaxPrice" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Minimum Star Rating -->
+                    <div class="mb-4">
+                        <label class="form-label small fw-semibold">Customer Rating</label>
+                        <div class="d-flex flex-column gap-1">
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="minRating" value="" id="ratingAll" checked="@(!Model.MinRating.HasValue)" />
+                                <label class="form-check-label small" for="ratingAll">Any Rating</label>
+                            </div>
+                            @for (int r = 4; r >= 1; r--)
+                            {
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="minRating" value="@r" id="rating@(r)" checked="@(Model.MinRating == r)" />
+                                    <label class="form-check-label small text-warning" for="rating@(r)">
+                                        @for (int s = 1; s <= r; s++) { <i class="bi bi-star-fill"></i> }
+                                        <span class="text-secondary">&amp; Up</span>
+                                    </label>
+                                </div>
+                            }
+                        </div>
+                    </div>
+
+                    <!-- Availability -->
+                    <div class="mb-4">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="inStockOnly" value="true" id="inStockCheck" checked="@Model.InStockOnly" />
+                            <label class="form-check-label small fw-semibold" for="inStockCheck">
+                                In-Stock Only
+                            </label>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary-custom w-100 btn-sm rounded-pill">
+                        Apply Filters
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Product Grid & Pagination -->
+        <div class="col-lg-9">
+            @if (!Model.Products.Any())
+            {
+                <!-- Empty State -->
+                <div class="card border-0 shadow-sm rounded-4 p-5 text-center" style="background-color: var(--bg-surface);">
+                    <div class="mb-3">
+                        <span class="badge bg-light text-secondary p-3 rounded-circle fs-1">
+                            <i class="bi bi-search"></i>
+                        </span>
+                    </div>
+                    <h4 class="fw-bold">No Products Found</h4>
+                    <p class="text-secondary small mb-4">
+                        We couldn't find any products matching your current filters or search query.
+                    </p>
+                    <div>
+                        <a asp-action="Index" class="btn btn-primary-custom rounded-pill px-4">
+                            Clear All Filters
+                        </a>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div class="row g-4">
+                    @foreach (var product in Model.Products)
+                    {
+                        <div class="col-sm-6 col-md-4">
+                            <div class="product-card">
+                                <div class="product-card-img-wrapper">
+                                    @if (product.StockQuantity < 5 && product.StockQuantity > 0)
+                                    {
+                                        <span class="product-badge bg-warning text-dark">Only @product.StockQuantity Left</span>
+                                    }
+                                    else if (product.StockQuantity == 0)
+                                    {
+                                        <span class="product-badge bg-danger">Sold Out</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="product-badge">@(product.Category?.Name ?? "General")</span>
+                                    }
+
+                                    <a asp-action="Details" asp-route-id="@product.Id">
+                                        <img src="@(product.MainImageUrl ?? "/images/placeholder.svg")" alt="@product.Name" class="product-card-img" />
+                                    </a>
+                                </div>
+                                <div class="product-card-body">
+                                    <!-- Star Rating -->
+                                    <div class="d-flex align-items-center gap-1 mb-2">
+                                        <div class="star-rating small">
+                                            @for (int i = 1; i <= 5; i++)
+                                            {
+                                                if (i <= Math.Round(product.AverageRating))
+                                                {
+                                                    <i class="bi bi-star-fill text-warning"></i>
+                                                }
+                                                else
+                                                {
+                                                    <i class="bi bi-star text-muted"></i>
+                                                }
+                                            }
+                                        </div>
+                                        <small class="text-secondary ms-1">(@product.ReviewCount)</small>
+                                    </div>
+
+                                    <h6 class="fw-bold mb-1">
+                                        <a asp-action="Details" asp-route-id="@product.Id" class="text-decoration-none text-reset text-truncate d-block" title="@product.Name">
+                                            @product.Name
+                                        </a>
+                                    </h6>
+                                    <p class="text-secondary small mb-3 flex-grow-1 text-truncate">@product.Description</p>
+
+                                    <div class="d-flex justify-content-between align-items-center pt-2 border-top">
+                                        <span class="product-price">৳@product.Price.ToString("F2")</span>
+                                        @if (product.StockQuantity > 0)
+                                        {
+                                            <button type="button" class="btn btn-sm btn-primary-custom rounded-pill" onclick="addToCartAjax(@product.Id, 1)" title="Add to Cart">
+                                                <i class="bi bi-cart-plus me-1"></i> Add
+                                            </button>
+                                        }
+                                        else
+                                        {
+                                            <button type="button" class="btn btn-sm btn-secondary rounded-pill disabled" disabled>
+                                                Sold Out
+                                            </button>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+
+                <!-- Server-Side Pagination -->
+                @if (Model.TotalPages > 1)
+                {
+                    <nav class="mt-5 d-flex justify-content-center" aria-label="Product Page Navigation">
+                        <ul class="pagination pagination-md shadow-sm">
+                            <!-- Previous Page -->
+                            <li class="page-item @(!Model.HasPreviousPage ? "disabled" : "")">
+                                <a class="page-link"
+                                   asp-action="Index"
+                                   asp-route-page="@(Model.CurrentPage - 1)"
+                                   asp-route-search="@Model.Search"
+                                   asp-route-categoryId="@Model.CategoryId"
+                                   asp-route-minPrice="@Model.MinPrice"
+                                   asp-route-maxPrice="@Model.MaxPrice"
+                                   asp-route-minRating="@Model.MinRating"
+                                   asp-route-inStockOnly="@Model.InStockOnly"
+                                   asp-route-sort="@Model.Sort">
+                                    <i class="bi bi-chevron-left"></i> Previous
+                                </a>
+                            </li>
+
+                            @for (int p = 1; p <= Model.TotalPages; p++)
+                            {
+                                <li class="page-item @(p == Model.CurrentPage ? "active" : "")">
+                                    <a class="page-link"
+                                       asp-action="Index"
+                                       asp-route-page="@p"
+                                       asp-route-search="@Model.Search"
+                                       asp-route-categoryId="@Model.CategoryId"
+                                       asp-route-minPrice="@Model.MinPrice"
+                                       asp-route-maxPrice="@Model.MaxPrice"
+                                       asp-route-minRating="@Model.MinRating"
+                                       asp-route-inStockOnly="@Model.InStockOnly"
+                                       asp-route-sort="@Model.Sort">
+                                        @p
+                                    </a>
+                                </li>
+                            }
+
+                            <!-- Next Page -->
+                            <li class="page-item @(!Model.HasNextPage ? "disabled" : "")">
+                                <a class="page-link"
+                                   asp-action="Index"
+                                   asp-route-page="@(Model.CurrentPage + 1)"
+                                   asp-route-search="@Model.Search"
+                                   asp-route-categoryId="@Model.CategoryId"
+                                   asp-route-minPrice="@Model.MinPrice"
+                                   asp-route-maxPrice="@Model.MaxPrice"
+                                   asp-route-minRating="@Model.MinRating"
+                                   asp-route-inStockOnly="@Model.InStockOnly"
+                                   asp-route-sort="@Model.Sort">
+                                    Next <i class="bi bi-chevron-right"></i>
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
+                }
+            }
+        </div>
+    </div>
+</div>

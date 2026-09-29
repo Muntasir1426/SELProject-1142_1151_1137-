@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="600" height="600" viewBox="0 0 600 600">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1e1b4b"/>
+      <stop offset="100%" stop-color="#312e81"/>
+    </linearGradient>
+    <linearGradient id="metal" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#38bdf8"/>
+      <stop offset="100%" stop-color="#6366f1"/>
+    </linearGradient>
+  </defs>
+  <rect width="600" height="600" fill="url(#bg)"/>
+  <circle cx="300" cy="300" r="180" fill="#4338ca" opacity="0.2"/>
+  <path d="M 210 320 A 100 100 0 0 1 390 320" fill="none" stroke="url(#metal)" stroke-width="24" stroke-linecap="round"/>
+  <rect x="180" y="290" width="60" height="110" rx="25" fill="#e0e7ff"/>
+  <rect x="360" y="290" width="60" height="110" rx="25" fill="#e0e7ff"/>
+  <rect x="170" y="315" width="20" height="60" rx="10" fill="#6366f1"/>
+  <rect x="410" y="315" width="20" height="60" rx="10" fill="#6366f1"/>
+  <text x="300" y="470" text-anchor="middle" fill="#ffffff" font-family="system-ui, -apple-system, sans-serif" font-weight="700" font-size="26" letter-spacing="1">AURA PRO WIRELESS</text>
+  <text x="300" y="505" text-anchor="middle" fill="#94a3b8" font-family="system-ui, -apple-system, sans-serif" font-weight="500" font-size="16">Active Noise Cancellation • 40h Battery</text>
+</svg>

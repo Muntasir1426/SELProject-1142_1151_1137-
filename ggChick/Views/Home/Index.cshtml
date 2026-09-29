@@ -1,0 +1,240 @@
+@model IEnumerable<ggChick.Models.Product>
+@{
+    ViewData["Title"] = "Premium Online Shopping";
+    var categories = ViewBag.Categories as List<ggChick.Models.Category> ?? new List<ggChick.Models.Category>();
+    var recentReviews = ViewBag.RecentReviews as List<ggChick.Models.Review> ?? new List<ggChick.Models.Review>();
+}
+
+<div class="container mt-3">
+    <!-- Hero Banner -->
+    <div class="hero-banner mb-5">
+        <div class="row align-items-center position-relative" style="z-index: 2;">
+            <div class="col-lg-7">
+                <span class="badge bg-white text-dark px-3 py-2 rounded-pill fw-semibold mb-3">
+                    <i class="bi bi-stars text-primary me-1"></i> New Spring Arrivals Live
+                </span>
+                <h1 class="display-4 fw-extrabold mb-3">Discover Streetwear &amp; Knitwear at GGCLIKS</h1>
+                <p class="lead text-white-50 mb-4">
+                    Explore heavy fleece hoodies, vintage graphic t-shirts, cozy mohair cardigans, and relaxed tailored pants crafted for elevated style.
+                </p>
+                <div class="d-flex flex-wrap gap-3">
+                    <a asp-controller="Products" asp-action="Index" class="btn btn-light btn-lg px-4 py-2 fw-semibold rounded-pill text-primary">
+                        <i class="bi bi-bag-fill me-2"></i> Shop Collection
+                    </a>
+                    <button type="button" class="btn btn-outline-light btn-lg px-4 py-2 fw-semibold rounded-pill" onclick="document.getElementById('chatbotToggleBtn').click();">
+                        <i class="bi bi-robot me-2"></i> Ask AI Shopping Assistant
+                    </button>
+                </div>
+            </div>
+            <div class="col-lg-5 d-none d-lg-block text-center">
+                <img src="~/images/products/cardigan.webp" alt="Featured Knitwear" class="img-fluid rounded-4 shadow-lg" style="max-height: 320px; object-fit: cover;" />
+            </div>
+        </div>
+    </div>
+
+    <!-- Store Features Bar -->
+    <div class="row g-4 mb-5">
+        <div class="col-6 col-md-3">
+            <div class="feature-box">
+                <div class="feature-icon-wrapper">
+                    <i class="bi bi-truck"></i>
+                </div>
+                <h6 class="fw-bold mb-1">Free Fast Delivery</h6>
+                <small class="text-secondary">On all orders over ৳100</small>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="feature-box">
+                <div class="feature-icon-wrapper">
+                    <i class="bi bi-arrow-repeat"></i>
+                </div>
+                <h6 class="fw-bold mb-1">30-Day Easy Returns</h6>
+                <small class="text-secondary">Hassle-free guarantee</small>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="feature-box">
+                <div class="feature-icon-wrapper">
+                    <i class="bi bi-robot"></i>
+                </div>
+                <h6 class="fw-bold mb-1">Gemini AI Assistant</h6>
+                <small class="text-secondary">Instant shopping guidance</small>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="feature-box">
+                <div class="feature-icon-wrapper">
+                    <i class="bi bi-shield-check"></i>
+                </div>
+                <h6 class="fw-bold mb-1">Secure Transactions</h6>
+                <small class="text-secondary">100% encrypted & protected</small>
+            </div>
+        </div>
+    </div>
+
+    <!-- Shop by Category Section -->
+    <div class="mb-5">
+        <div class="d-flex justify-content-between align-items-end mb-4">
+            <div>
+                <span class="text-primary fw-bold text-uppercase small letter-spacing-1">Browse Catalog</span>
+                <h2 class="fw-bold mb-0">Shop by Category</h2>
+            </div>
+            <a asp-controller="Products" asp-action="Index" class="btn btn-outline-custom btn-sm">
+                View All <i class="bi bi-arrow-right ms-1"></i>
+            </a>
+        </div>
+
+        <div class="row g-3">
+            @foreach (var cat in categories)
+            {
+                <div class="col-6 col-md-3">
+                    <a asp-controller="Products" asp-action="Index" asp-route-categoryId="@cat.Id" class="text-decoration-none">
+                        <div class="card border-0 shadow-sm rounded-4 p-4 text-center h-100 transition-hover" style="background-color: var(--bg-surface);">
+                            <div class="mb-3">
+                                @if (cat.Name.Equals("Tshirt", StringComparison.OrdinalIgnoreCase) || cat.Name.Equals("T-Shirts", StringComparison.OrdinalIgnoreCase))
+                                {
+                                    <span class="badge bg-primary-subtle text-primary p-3 rounded-circle fs-3"><i class="bi bi-tag-fill"></i></span>
+                                }
+                                else if (cat.Name.Equals("cardigans", StringComparison.OrdinalIgnoreCase))
+                                {
+                                    <span class="badge bg-warning-subtle text-warning p-3 rounded-circle fs-3"><i class="bi bi-layers-fill"></i></span>
+                                }
+                                else if (cat.Name.Equals("hoodies", StringComparison.OrdinalIgnoreCase))
+                                {
+                                    <span class="badge bg-danger-subtle text-danger p-3 rounded-circle fs-3"><i class="bi bi-fire"></i></span>
+                                }
+                                else if (cat.Name.Equals("pants", StringComparison.OrdinalIgnoreCase))
+                                {
+                                    <span class="badge bg-success-subtle text-success p-3 rounded-circle fs-3"><i class="bi bi-columns-gap"></i></span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-info-subtle text-info p-3 rounded-circle fs-3"><i class="bi bi-bag-check-fill"></i></span>
+                                }
+                            </div>
+                            <h6 class="fw-bold text-dark mb-1 text-capitalize">@cat.Name</h6>
+                            <small class="text-secondary">@(cat.Products?.Count ?? 0) Products</small>
+                        </div>
+                    </a>
+                </div>
+            }
+        </div>
+    </div>
+
+    <!-- Featured Products Section -->
+    <div class="mb-5">
+        <div class="d-flex justify-content-between align-items-end mb-4">
+            <div>
+                <span class="text-primary fw-bold text-uppercase small letter-spacing-1">Top Rated Items</span>
+                <h2 class="fw-bold mb-0">Featured Products</h2>
+            </div>
+            <a asp-controller="Products" asp-action="Index" class="btn btn-outline-custom btn-sm">
+                See More Products <i class="bi bi-arrow-right ms-1"></i>
+            </a>
+        </div>
+
+        <div class="row g-4">
+            @foreach (var product in Model)
+            {
+                <div class="col-sm-6 col-md-4 col-lg-3">
+                    <div class="product-card">
+                        <div class="product-card-img-wrapper">
+                            @if (product.StockQuantity < 5 && product.StockQuantity > 0)
+                            {
+                                <span class="product-badge bg-warning text-dark">Only @product.StockQuantity Left</span>
+                            }
+                            else if (product.StockQuantity == 0)
+                            {
+                                <span class="product-badge bg-danger">Sold Out</span>
+                            }
+                            else
+                            {
+                                <span class="product-badge">@(product.Category?.Name ?? "General")</span>
+                            }
+
+                            <a asp-controller="Products" asp-action="Details" asp-route-id="@product.Id">
+                                <img src="@(product.MainImageUrl ?? "/images/placeholder.svg")" alt="@product.Name" class="product-card-img" />
+                            </a>
+                        </div>
+                        <div class="product-card-body">
+                            <!-- Star Rating -->
+                            <div class="d-flex align-items-center gap-1 mb-2">
+                                <div class="star-rating small">
+                                    @for (int i = 1; i <= 5; i++)
+                                    {
+                                        if (i <= Math.Round(product.AverageRating))
+                                        {
+                                            <i class="bi bi-star-fill text-warning"></i>
+                                        }
+                                        else
+                                        {
+                                            <i class="bi bi-star text-muted"></i>
+                                        }
+                                    }
+                                </div>
+                                <small class="text-secondary ms-1">(@product.ReviewCount)</small>
+                            </div>
+
+                            <h6 class="fw-bold mb-1">
+                                <a asp-controller="Products" asp-action="Details" asp-route-id="@product.Id" class="text-decoration-none text-reset text-truncate d-block" title="@product.Name">
+                                    @product.Name
+                                </a>
+                            </h6>
+                            <p class="text-secondary small mb-3 flex-grow-1 text-truncate">@product.Description</p>
+
+                            <div class="d-flex justify-content-between align-items-center pt-2 border-top">
+                                <span class="product-price">৳@product.Price.ToString("F2")</span>
+                                @if (product.StockQuantity > 0)
+                                {
+                                    <button type="button" class="btn btn-sm btn-primary-custom rounded-pill" onclick="addToCartAjax(@product.Id, 1)" title="Add to Cart">
+                                        <i class="bi bi-cart-plus me-1"></i> Add
+                                    </button>
+                                }
+                                else
+                                {
+                                    <button type="button" class="btn btn-sm btn-secondary rounded-pill disabled" disabled>
+                                        Out of stock
+                                    </button>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+
+    <!-- Customer Reviews / Testimonials -->
+    @if (recentReviews.Any())
+    {
+        <div class="mb-5">
+            <div class="text-center mb-4">
+                <span class="text-primary fw-bold text-uppercase small">Real Feedback</span>
+                <h2 class="fw-bold">What Our Customers Say</h2>
+            </div>
+            <div class="row g-4">
+                @foreach (var rev in recentReviews)
+                {
+                    <div class="col-md-4">
+                        <div class="card border-0 shadow-sm rounded-4 p-4 h-100" style="background-color: var(--bg-surface);">
+                            <div class="d-flex align-items-center gap-1 mb-2">
+                                @for (int i = 1; i <= 5; i++)
+                                {
+                                    <i class="bi @(i <= rev.Rating ? "bi-star-fill text-warning" : "bi-star text-muted")"></i>
+                                }
+                            </div>
+                            <p class="small text-secondary mb-3 fst-italic">"@rev.Comment"</p>
+                            <div class="mt-auto d-flex justify-content-between align-items-center pt-2 border-top">
+                                <div>
+                                    <h6 class="mb-0 fw-bold small">@(rev.User?.FullName ?? "Verified Buyer")</h6>
+                                    <small class="text-muted">on @(rev.Product?.Name ?? "Item")</small>
+                                </div>
+                                <span class="badge bg-light text-secondary border">Verified</span>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    }
+</div>

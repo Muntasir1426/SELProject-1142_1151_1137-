@@ -1,0 +1,38 @@
+@model ggChick.Models.Product
+@{
+    ViewData["Title"] = "Delete Product: " + Model.Name;
+}
+
+<div class="row justify-content-center">
+    <div class="col-md-7 col-lg-6">
+        <div class="card border-0 shadow-sm rounded-4 p-4 p-lg-5" style="background-color: var(--bg-surface);">
+            <div class="text-center mb-4">
+                <span class="badge bg-danger-subtle text-danger p-3 rounded-circle fs-3 mb-2">
+                    <i class="bi bi-exclamation-triangle"></i>
+                </span>
+                <h3 class="fw-bold mb-1">Delete Product?</h3>
+                <p class="text-secondary small">This will remove the product and its uploaded images permanently.</p>
+            </div>
+
+            <div class="card bg-light border-0 rounded-3 p-3 mb-4 d-flex align-items-center gap-3">
+                <img src="@(Model.MainImageUrl ?? "/images/placeholder.svg")" class="rounded border" style="width: 70px; height: 70px; object-fit: cover;" alt="@Model.Name" />
+                <div>
+                    <h6 class="fw-bold mb-1">@Model.Name</h6>
+                    <small class="text-muted d-block">Category: @(Model.Category?.Name ?? "General")</small>
+                    <small class="text-primary fw-semibold">৳@Model.Price.ToString("F2") | Stock: @Model.StockQuantity</small>
+                </div>
+            </div>
+
+            <form asp-action="Delete" method="post">
+                @Html.AntiForgeryToken()
+                <input type="hidden" asp-for="Id" />
+                <div class="d-flex justify-content-center gap-3">
+                    <button type="submit" class="btn btn-danger rounded-pill px-4">
+                        <i class="bi bi-trash me-1"></i> Confirm Delete
+                    </button>
+                    <a asp-action="Index" class="btn btn-outline-custom rounded-pill">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

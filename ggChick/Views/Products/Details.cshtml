@@ -1,0 +1,339 @@
+@model ggChick.ViewModels.Products.ProductDetailsViewModel
+@{
+    ViewData["Title"] = Model.Product.Name;
+}
+
+<div class="container py-4">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb small">
+            <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index" class="text-decoration-none text-secondary">Home</a></li>
+            <li class="breadcrumb-item"><a asp-controller="Products" asp-action="Index" class="text-decoration-none text-secondary">Catalog</a></li>
+            <li class="breadcrumb-item"><a asp-controller="Products" asp-action="Index" asp-route-categoryId="@Model.Product.CategoryId" class="text-decoration-none text-secondary">@Model.Product.Category?.Name</a></li>
+            <li class="breadcrumb-item active" aria-current="page">@Model.Product.Name</li>
+        </ol>
+    </nav>
+
+    <!-- Main Product Section -->
+    <div class="card border-0 shadow-sm rounded-4 p-4 p-lg-5 mb-5" style="background-color: var(--bg-surface);">
+        <div class="row g-5">
+            <!-- Left: Product Images / Gallery -->
+            <div class="col-lg-6">
+                <!-- Carousel / Gallery -->
+                <div id="productCarousel" class="carousel slide bg-light rounded-4 overflow-hidden mb-3" data-bs-ride="false">
+                    <div class="carousel-inner" style="max-height: 480px; min-height: 350px;">
+                        <div class="carousel-item active text-center p-3">
+                            <img src="@(Model.Product.MainImageUrl ?? "/images/placeholder.svg")" id="mainZoomImage" class="d-block w-100 object-fit-contain" style="max-height: 440px;" alt="@Model.Product.Name">
+                        </div>
+                        @foreach (var img in Model.Product.Images.Where(i => i.ImageUrl != Model.Product.MainImageUrl))
+                        {
+                            <div class="carousel-item text-center p-3">
+                                <img src="@img.ImageUrl" class="d-block w-100 object-fit-contain" style="max-height: 440px;" alt="Product image">
+                            </div>
+                        }
+                    </div>
+                    @if (Model.Product.Images.Count > 1)
+                    {
+                        <button class="carousel-control-prev" type="button" data-bs-target="#productCarousel" data-bs-slide="prev">
+                            <span class="carousel-control-prev-icon bg-dark rounded-circle p-2" aria-hidden="true"></span>
+                            <span class="visually-hidden">Previous</span>
+                        </button>
+                        <button class="carousel-control-next" type="button" data-bs-target="#productCarousel" data-bs-slide="next">
+                            <span class="carousel-control-next-icon bg-dark rounded-circle p-2" aria-hidden="true"></span>
+                            <span class="visually-hidden">Next</span>
+                        </button>
+                    }
+                </div>
+
+                <!-- Thumbnail strip -->
+                @if (Model.Product.Images.Count > 1)
+                {
+                    <div class="d-flex gap-2 overflow-auto py-1">
+                        <img src="@(Model.Product.MainImageUrl ?? "/images/placeholder.svg")" class="rounded border p-1" style="width: 65px; height: 65px; object-fit: cover; cursor: pointer;" onclick="document.querySelector('#productCarousel .carousel-inner').children[0].classList.add('active');" alt="Thumbnail" />
+                        @foreach (var img in Model.Product.Images.Where(i => i.ImageUrl != Model.Product.MainImageUrl))
+                        {
+                            <img src="@img.ImageUrl" class="rounded border p-1" style="width: 65px; height: 65px; object-fit: cover; cursor: pointer;" alt="Thumbnail" />
+                        }
+                    </div>
+                }
+            </div>
+
+            <!-- Right: Product Overview & Actions -->
+            <div class="col-lg-6 d-flex flex-column justify-content-between">
+                <div>
+                    <div class="d-flex align-items-center gap-2 mb-2">
+                        <span class="badge bg-primary-subtle text-primary fw-semibold px-3 py-1 rounded-pill">
+                            @(Model.Product.Category?.Name ?? "General")
+                        </span>
+                        @if (Model.Product.StockQuantity > 0)
+                        {
+                            <span class="badge bg-success-subtle text-success fw-semibold px-3 py-1 rounded-pill">
+                                <i class="bi bi-check2-circle me-1"></i> In Stock (@Model.Product.StockQuantity available)
+                            </span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-danger-subtle text-danger fw-semibold px-3 py-1 rounded-pill">
+                                <i class="bi bi-x-circle me-1"></i> Out of Stock
+                            </span>
+                        }
+                    </div>
+
+                    <h2 class="fw-bold mb-3">@Model.Product.Name</h2>
+
+                    <!-- Star Rating Badge -->
+                    <div class="d-flex align-items-center gap-2 mb-3">
+                        <div class="star-rating">
+                            @for (int i = 1; i <= 5; i++)
+                            {
+                                if (i <= Math.Round(Model.Product.AverageRating))
+                                {
+                                    <i class="bi bi-star-fill text-warning"></i>
+                                }
+                                else
+                                {
+                                    <i class="bi bi-star text-muted"></i>
+                                }
+                            }
+                        </div>
+                        <span class="fw-bold">@Model.Product.AverageRating</span>
+                        <a href="#reviewsSection" class="text-secondary small text-decoration-none">(@Model.Product.ReviewCount reviews)</a>
+                    </div>
+
+                    <!-- Price -->
+                    <div class="mb-4">
+                        <span class="display-6 fw-bold text-primary">৳@Model.Product.Price.ToString("F2")</span>
+                    </div>
+
+                    <!-- Description -->
+                    <div class="mb-4">
+                        <h6 class="fw-bold text-uppercase small text-secondary">Description</h6>
+                        <p class="text-secondary" style="line-height: 1.7;">@Model.Product.Description</p>
+                    </div>
+                </div>
+
+                <!-- Purchase Controls -->
+                <div class="pt-4 border-top">
+                    @if (Model.Product.StockQuantity > 0)
+                    {
+                        <div class="d-flex flex-wrap align-items-center gap-3">
+                            <div class="input-group" style="width: 130px;">
+                                <button class="btn btn-outline-secondary" type="button" onclick="const q = document.getElementById('detailsQuantity'); if(q.value > 1) q.value--;">-</button>
+                                <input type="number" id="detailsQuantity" class="form-control text-center" value="1" min="1" max="@Model.Product.StockQuantity" readonly />
+                                <button class="btn btn-outline-secondary" type="button" onclick="const q = document.getElementById('detailsQuantity'); if(q.value < @Model.Product.StockQuantity) q.value++;">+</button>
+                            </div>
+                            <button type="button" class="btn btn-primary-custom btn-lg flex-grow-1 rounded-pill" onclick="addToCartAjax(@Model.Product.Id, parseInt(document.getElementById('detailsQuantity').value))">
+                                <i class="bi bi-cart-plus me-2"></i> Add to Shopping Cart
+                            </button>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="alert alert-warning mb-0 py-2">
+                            <i class="bi bi-exclamation-triangle-fill me-1"></i> This item is temporarily out of stock. Check back soon!
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Reviews and Discussion Tabs Section -->
+    <div class="card border-0 shadow-sm rounded-4 p-4 p-lg-5 mb-5" id="reviewsSection" style="background-color: var(--bg-surface);">
+        <ul class="nav nav-pills mb-4" id="pills-tab" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active fw-semibold" id="pills-reviews-tab" data-bs-toggle="pill" data-bs-target="#pills-reviews" type="button" role="tab">
+                    <i class="bi bi-star me-1"></i> Customer Reviews (@Model.Product.Reviews.Count)
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link fw-semibold" id="pills-comments-tab" data-bs-toggle="pill" data-bs-target="#pills-comments" type="button" role="tab">
+                    <i class="bi bi-chat-dots me-1"></i> Questions &amp; Discussion (@Model.Product.Comments.Count)
+                </button>
+            </li>
+        </ul>
+
+        <div class="tab-content" id="pills-tabContent">
+            <!-- Tab 1: Reviews -->
+            <div class="tab-pane fade show active" id="pills-reviews" role="tabpanel">
+                <!-- Write / Edit Review Form -->
+                <div class="card bg-light border-0 rounded-4 p-4 mb-4">
+                    @if (User.Identity?.IsAuthenticated == true)
+                    {
+                        <h5 class="fw-bold mb-3">@(Model.UserHasReviewed ? "Update Your Review" : "Write a Review")</h5>
+                        <form asp-controller="Reviews" asp-action="Create" method="post">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="ProductId" value="@Model.Product.Id" />
+                            <input type="hidden" name="Rating" id="ratingInput" value="@(Model.UserExistingReview?.Rating ?? 5)" />
+
+                            <!-- 5-Star Interactive Selector -->
+                            <div class="mb-3">
+                                <label class="form-label small fw-semibold">Your Rating</label>
+                                <div class="interactive-stars">
+                                    @for (int s = 1; s <= 5; s++)
+                                    {
+                                        <i class="bi bi-star-fill star selected" data-value="@s"></i>
+                                    }
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label small fw-semibold">Your Review Feedback</label>
+                                <textarea name="Comment" class="form-control" rows="3" placeholder="Describe your experience with this product..." required>@(Model.UserExistingReview?.Comment ?? "")</textarea>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary-custom btn-sm rounded-pill px-4">
+                                <i class="bi bi-send me-1"></i> Submit Review
+                            </button>
+                        </form>
+                    }
+                    else
+                    {
+                        <div class="text-center py-2">
+                            <p class="text-secondary small mb-2">Have you used this product? Share your experience with other shoppers!</p>
+                            <a asp-controller="Account" asp-action="Login" asp-route-returnUrl="@Context.Request.Path" class="btn btn-outline-custom btn-sm">
+                                Sign In to Write a Review
+                            </a>
+                        </div>
+                    }
+                </div>
+
+                <!-- Reviews List -->
+                @if (!Model.Product.Reviews.Any())
+                {
+                    <p class="text-secondary small fst-italic">No reviews yet. Be the first to review this product!</p>
+                }
+                else
+                {
+                    <div class="d-flex flex-column gap-3">
+                        @foreach (var review in Model.Product.Reviews)
+                        {
+                            <div class="border-bottom pb-3">
+                                <div class="d-flex justify-content-between align-items-center mb-1">
+                                    <div class="d-flex align-items-center gap-2">
+                                        <span class="fw-bold small">@(review.User?.FullName ?? "Customer")</span>
+                                        <div class="star-rating small">
+                                            @for (int i = 1; i <= 5; i++)
+                                            {
+                                                <i class="bi @(i <= review.Rating ? "bi-star-fill text-warning" : "bi-star text-muted")"></i>
+                                            }
+                                        </div>
+                                    </div>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <small class="text-muted">@review.CreatedAt.ToString("MMM dd, yyyy")</small>
+                                        @if (User.Identity?.IsAuthenticated == true && (review.UserId == User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value || User.IsInRole("Admin")))
+                                        {
+                                            <form asp-controller="Reviews" asp-action="Delete" asp-route-id="@review.Id" method="post" onsubmit="return confirm('Delete this review?');" class="d-inline">
+                                                @Html.AntiForgeryToken()
+                                                <button type="submit" class="btn btn-link text-danger p-0 border-0 text-decoration-none small" title="Delete Review">
+                                                    <i class="bi bi-trash"></i>
+                                                </button>
+                                            </form>
+                                        }
+                                    </div>
+                                </div>
+                                <p class="text-secondary small mb-0">@review.Comment</p>
+                            </div>
+                        }
+                    </div>
+                }
+            </div>
+
+            <!-- Tab 2: Comments / Q&A -->
+            <div class="tab-pane fade" id="pills-comments" role="tabpanel">
+                <!-- Post Comment Form -->
+                <div class="card bg-light border-0 rounded-4 p-4 mb-4">
+                    @if (User.Identity?.IsAuthenticated == true)
+                    {
+                        <h5 class="fw-bold mb-3">Ask a Question or Comment</h5>
+                        <form asp-controller="Comments" asp-action="Create" method="post">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="ProductId" value="@Model.Product.Id" />
+                            <div class="mb-3">
+                                <textarea name="Content" class="form-control" rows="2" placeholder="Have a question about sizing, materials, or compatibility? Ask here..." required></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-primary-custom btn-sm rounded-pill px-4">
+                                <i class="bi bi-chat-left-text me-1"></i> Post Comment
+                            </button>
+                        </form>
+                    }
+                    else
+                    {
+                        <div class="text-center py-2">
+                            <p class="text-secondary small mb-2">Have questions about this item?</p>
+                            <a asp-controller="Account" asp-action="Login" asp-route-returnUrl="@Context.Request.Path" class="btn btn-outline-custom btn-sm">
+                                Sign In to Post Questions
+                            </a>
+                        </div>
+                    }
+                </div>
+
+                <!-- Comments List -->
+                @if (!Model.Product.Comments.Any())
+                {
+                    <p class="text-secondary small fst-italic">No questions or comments yet.</p>
+                }
+                else
+                {
+                    <div class="d-flex flex-column gap-3">
+                        @foreach (var c in Model.Product.Comments)
+                        {
+                            <div class="border-bottom pb-3">
+                                <div class="d-flex justify-content-between align-items-center mb-1">
+                                    <div class="d-flex align-items-center gap-2">
+                                        <i class="bi bi-chat-left-quote text-primary"></i>
+                                        <span class="fw-bold small">@(c.User?.FullName ?? "User")</span>
+                                    </div>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <small class="text-muted">@c.CreatedAt.ToString("MMM dd, yyyy h:mm tt")</small>
+                                        @if (User.Identity?.IsAuthenticated == true && (c.UserId == User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value || User.IsInRole("Admin")))
+                                        {
+                                            <form asp-controller="Comments" asp-action="Delete" asp-route-id="@c.Id" method="post" onsubmit="return confirm('Delete this comment?');" class="d-inline">
+                                                @Html.AntiForgeryToken()
+                                                <button type="submit" class="btn btn-link text-danger p-0 border-0 text-decoration-none small">
+                                                    <i class="bi bi-trash"></i>
+                                                </button>
+                                            </form>
+                                        }
+                                    </div>
+                                </div>
+                                <p class="text-secondary small mb-0">@c.Content</p>
+                            </div>
+                        }
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <!-- Related Products -->
+    @if (Model.RelatedProducts.Any())
+    {
+        <div>
+            <h4 class="fw-bold mb-4">Related Products</h4>
+            <div class="row g-4">
+                @foreach (var rel in Model.RelatedProducts)
+                {
+                    <div class="col-sm-6 col-md-3">
+                        <div class="product-card">
+                            <div class="product-card-img-wrapper">
+                                <a asp-action="Details" asp-route-id="@rel.Id">
+                                    <img src="@(rel.MainImageUrl ?? "/images/placeholder.svg")" alt="@rel.Name" class="product-card-img" />
+                                </a>
+                            </div>
+                            <div class="product-card-body">
+                                <h6 class="fw-bold mb-1 text-truncate">
+                                    <a asp-action="Details" asp-route-id="@rel.Id" class="text-decoration-none text-reset">@rel.Name</a>
+                                </h6>
+                                <div class="d-flex justify-content-between align-items-center pt-2 mt-auto border-top">
+                                    <span class="product-price fs-6">৳@rel.Price.ToString("F2")</span>
+                                    <a asp-action="Details" asp-route-id="@rel.Id" class="btn btn-sm btn-outline-custom rounded-pill">View</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    }
+</div>

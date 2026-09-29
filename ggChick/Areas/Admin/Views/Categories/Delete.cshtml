@@ -1,0 +1,35 @@
+@model ggChick.Models.Category
+@{
+    ViewData["Title"] = "Delete Category";
+}
+
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card border-0 shadow-sm rounded-4 p-4 p-lg-5" style="background-color: var(--bg-surface);">
+            <div class="mb-4 text-center">
+                <span class="badge bg-danger-subtle text-danger p-3 rounded-circle fs-3 mb-2">
+                    <i class="bi bi-exclamation-triangle"></i>
+                </span>
+                <h3 class="fw-bold mb-1">Delete Category?</h3>
+                <p class="text-secondary small">Are you sure you want to permanently remove this category?</p>
+            </div>
+
+            <div class="bg-light rounded-3 p-3 mb-4">
+                <p class="mb-1"><strong>Name:</strong> @Model.Name</p>
+                <p class="mb-1"><strong>Description:</strong> @(Model.Description ?? "None")</p>
+                <p class="mb-0"><strong>Current Products:</strong> @Model.Products.Count</p>
+            </div>
+
+            <form asp-action="Delete" method="post">
+                @Html.AntiForgeryToken()
+                <input type="hidden" asp-for="Id" />
+                <div class="d-flex justify-content-center gap-3">
+                    <button type="submit" class="btn btn-danger rounded-pill px-4">
+                        <i class="bi bi-trash me-1"></i> Confirm Delete
+                    </button>
+                    <a asp-action="Index" class="btn btn-outline-custom rounded-pill">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

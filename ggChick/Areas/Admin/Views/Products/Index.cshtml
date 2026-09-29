@@ -1,0 +1,95 @@
+@model IEnumerable<ggChick.Models.Product>
+@{
+    ViewData["Title"] = "Manage Products";
+}
+
+<div class="d-flex flex-wrap justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="fw-bold mb-1">Products</h2>
+        <p class="text-secondary small mb-0">View, add, update, and manage your inventory catalog</p>
+    </div>
+    <a asp-action="Create" class="btn btn-primary-custom btn-sm rounded-pill">
+        <i class="bi bi-plus-lg me-1"></i> Add New Product
+    </a>
+</div>
+
+<div class="card border-0 shadow-sm rounded-4 overflow-hidden" style="background-color: var(--bg-surface);">
+    <div class="table-responsive">
+        <table class="table align-middle mb-0">
+            <thead class="table-light small">
+                <tr>
+                    <th class="ps-4">Product</th>
+                    <th>Category</th>
+                    <th>Price</th>
+                    <th>Stock</th>
+                    <th>Rating</th>
+                    <th>Status</th>
+                    <th class="text-end pe-4">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var p in Model)
+                {
+                    <tr>
+                        <td class="ps-4">
+                            <div class="d-flex align-items-center gap-3">
+                                <img src="@(p.MainImageUrl ?? "/images/placeholder.svg")" alt="@p.Name" class="rounded-3 border" style="width: 48px; height: 48px; object-fit: cover;" />
+                                <div>
+                                    <h6 class="mb-0 fw-bold small text-truncate" style="max-width: 250px;">
+                                        <a asp-action="Edit" asp-route-id="@p.Id" class="text-decoration-none text-reset">@p.Name</a>
+                                    </h6>
+                                    <small class="text-muted">Added @p.CreatedAt.ToString("MMM dd, yyyy")</small>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <span class="badge bg-light text-dark border">
+                                @(p.Category?.Name ?? "Uncategorized")
+                            </span>
+                        </td>
+                        <td class="fw-bold text-primary small">৳@p.Price.ToString("F2")</td>
+                        <td>
+                            @if (p.StockQuantity <= 0)
+                            {
+                                <span class="badge bg-danger">0 Out of Stock</span>
+                            }
+                            else if (p.StockQuantity < 10)
+                            {
+                                <span class="badge bg-warning text-dark">@p.StockQuantity Low</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-success-subtle text-success">@p.StockQuantity Units</span>
+                            }
+                        </td>
+                        <td>
+                            <div class="d-flex align-items-center gap-1 small text-warning">
+                                <i class="bi bi-star-fill"></i>
+                                <span class="text-dark fw-bold">@p.AverageRating</span>
+                                <small class="text-muted">(@p.ReviewCount)</small>
+                            </div>
+                        </td>
+                        <td>
+                            @if (p.IsActive)
+                            {
+                                <span class="badge bg-success-subtle text-success">Active</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-secondary-subtle text-secondary">Inactive</span>
+                            }
+                        </td>
+                        <td class="text-end pe-4">
+                            <a asp-action="Edit" asp-route-id="@p.Id" class="btn btn-sm btn-outline-primary me-1" title="Edit">
+                                <i class="bi bi-pencil"></i>
+                            </a>
+                            <a asp-action="Delete" asp-route-id="@p.Id" class="btn btn-sm btn-outline-danger" title="Delete">
+                                <i class="bi bi-trash"></i>
+                            </a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

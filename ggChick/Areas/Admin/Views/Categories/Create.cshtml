@@ -1,0 +1,43 @@
+@model ggChick.Models.Category
+@{
+    ViewData["Title"] = "Create Category";
+}
+
+<div class="row justify-content-center">
+    <div class="col-md-7 col-lg-6">
+        <div class="card border-0 shadow-sm rounded-4 p-4 p-lg-5" style="background-color: var(--bg-surface);">
+            <div class="mb-4">
+                <h3 class="fw-bold mb-1">Create Category</h3>
+                <p class="text-secondary small">Add a new product category to the GGCLIKS catalog</p>
+            </div>
+
+            <form asp-action="Create" method="post" novalidate>
+                @Html.AntiForgeryToken()
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger py-2 small" role="alert"></div>
+
+                <div class="mb-3">
+                    <label asp-for="Name" class="form-label small fw-semibold"></label>
+                    <input asp-for="Name" class="form-control" placeholder="e.g. Smart Wearables" />
+                    <span asp-validation-for="Name" class="text-danger small"></span>
+                </div>
+
+                <div class="mb-4">
+                    <label asp-for="Description" class="form-label small fw-semibold"></label>
+                    <textarea asp-for="Description" class="form-control" rows="3" placeholder="Category summary for customers"></textarea>
+                    <span asp-validation-for="Description" class="text-danger small"></span>
+                </div>
+
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-primary-custom rounded-pill px-4">
+                        Save Category
+                    </button>
+                    <a asp-action="Index" class="btn btn-outline-custom rounded-pill">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
